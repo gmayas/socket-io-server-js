@@ -1,20 +1,3 @@
-/*var express = require('express');
-const http = require("http");
-const index = require("./routes/routes");
-
-// App setup
-var app = express();
-app.use(index);
-var socket = require('socket.io')
-const port = process.env.PORT || 4001;
-var server = app.listen(port, () => console.log(`Listening on port ${port}`));
-
-let io = socket(server)
-io.on('connection', function(socket){
-  console.log(`${socket.id} is connected`);
-});*/
-
-
 const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
