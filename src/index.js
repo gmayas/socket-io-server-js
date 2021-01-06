@@ -17,5 +17,7 @@ const io = socketIo(server);
 
 // Sockets
 require('../src/public/js/sockets')(io);
+// Database
+require('../src/public/js/database');
 
 server.listen(port, () => console.log(`Listening on port ${port}`));
