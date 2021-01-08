@@ -11,54 +11,89 @@ module.exports = (io) => {
     socket.on("login user", async (req, res) => {
       console.log("Login user req: ", req);
       socket.nickname = req.nickName;
-      console.log("Login user: ", socket.nickname);
-      
-      res({
-        nickName: socket.nickname,
-        Ok: true,
-      });
-      var newUser = new Users({
-        nickName: req?.nickName,
-        position: req?.position,
-        online: req?.online,
-        updated: Date.now(),
-      });
-      //console.log("Login user newUser: ", newUser);
-      //await newUser.save();
-
-      /*await Users.remove({nickName: req?.nickName},  (err, data) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log("Data Deleted!", data);
+      const findUser = await Users.findOne(
+        { nickName: socket.nickname },
+        (err, data) => {
+          if (err) {
+            console.log("Error findOne", err);
+          } else {
+            console.log("Data findOne Ok");
+          }
         }
-      });*/
-          
-      await Users.updateOne(
-        {nickName: req?.nickName},
-         {
-            position: req?.position,
-            online: false,
-            updated: Date.now()
-           },
-           (err, data) => {
+      );
+      console.log("findUser: ", findUser);
+      if (findUser) {
+        res({
+          nickName: socket.nickname,
+          Ok: false,
+          position: [],
+          msg: "Ya existe un usuario conectado con ese nombre, utilice otro.",
+        });
+        return;
+      } else {
+        var newUser = new Users({
+          nickName: req?.nickName,
+          position: req?.position,
+          online: req?.online,
+          updated: Date.now(),
+        });
+        console.log("Login user newUser: ", newUser);
+        await newUser.save();
+        let userList = await Users.find({}).sort("_id");
+        //Se transmite y emite a todos los usuarios conectados
+        socket.broadcast.emit("userListRefresh", userList);
+        res({
+          nickName: socket.nickname,
+          Ok: true,
+          position: req?.position,
+          msg: `Bienvenido: ${socket.nickname}`,
+        });
+      }
+    });
+    //Se escucha el evento emitido userCoordinates.
+    socket.on("userCoordinates", async (position) => {
+      console.log("userCoordinates: ", position);
+      // Se actulizan las position de los usuarios.
+      if (JSON.stringify(position) != "{}") {
+        //execute
+        await Users.updateOne(
+          { nickName: position?.userData?.nickName },
+          {
+            position: position.LatLng,
+            updated: Date.now(),
+          },
+          (err, data) => {
             if (err) {
-              console.log(err);
+              console.log("Error updated!", err);
             } else {
-              console.log("Data updated!", data);
+              console.log("Data updated!");
             }
           }
-        
-      );
-      let UsersList = await Users.find({}).sort("_id");
-      console.log('UsersList: ', UsersList)
-
-      //Se escucha el evento emitido userCoordinates.
-      socket.on("userCoordinates", (coords) => {
-        console.log("userCoordinates: ", coords);
+        );
+        let userList = await Users.find({}).sort("_id");
         //Se transmite y emite a todos los usuarios conectados
-        socket.broadcast.emit("newUserCordinates", coords);
+        socket.broadcast.emit("newUserCordinates", userList);
+      } else {
+        console.log("vacio");
+      }
+    });
+    //sockets.emit('userLogout', socket.nickname);
+    socket.on("userLogout", async (req, res) => {
+      console.log("User Logout: ", req?.nickName);
+      await Users.remove({ nickName: req?.nickName },  (err) => {
+        if (err) {
+          console.log("Error removed!", err);
+        } else {
+          console.log("Data removed!");
+        }
       });
+      let userList = await Users.find({}).sort("_id");
+      //console.log("userList: ", userList);
+      //Se transmite y emite a todos los usuarios conectados
+      res(
+        { logOut: true } 
+      )
+      socket.broadcast.emit("userListRefresh", userList);
     });
     socket.on("disconnect", () => {
       console.log("Disconnect only ...");

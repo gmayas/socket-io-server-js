@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 
 const UsersSchema = new Schema({
   nickName: String,
-  position: { lat: Number, lng: Number },
+  position: [],
   online: Boolean,
   updated: { type: Date, default: Date.now }
 });
