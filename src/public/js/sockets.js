@@ -3,15 +3,10 @@ const dataServices = require("../js/dataServices");
 module.exports = (io) => {
   io.on("connection", async (socket) => {
     console.log("There is a new connection...");
-    //let messages = await Chat.find({}).sort('_id');
-    //console.log('messages: ', messages)
-
     socket.emit("new connection", "Hola bienvenido a nuestra apliación.");
     socket.on("login user", async (req, res) => {
-      //console.log("Login user req: ", req);
       socket.nickname = req.nickName;
       const findUser = await dataServices.findUser(socket.nickname);
-      //console.log("findUser: ", findUser);
       if (findUser) {
         res({
           nickName: socket.nickname,
@@ -22,9 +17,9 @@ module.exports = (io) => {
         return;
       } else {
         await dataServices.addNewUser(req);
-        //let userList = await dataServices.userList();
-        //Se transmite y emite a todos los usuarios conectados
-        ListRefresh();
+        getMessages();
+        ListRefreshMap();
+        ListRefreshChat();
         res({
           nickName: socket.nickname,
           Ok: true,
@@ -35,32 +30,24 @@ module.exports = (io) => {
     });
     //Se escucha el evento emitido userCoordinates.
     socket.on("userCoordinates", async (position) => {
-      //console.log("userCoordinates: ", position);
       // Se actulizan las position de los usuarios.
       if (JSON.stringify(position) != "{}") {
-        //execute
         await dataServices.updateUser(position);
-        //let userList = await dataServices.userList();
-        //console.log('userList: ', userList)
         //Se transmite y emite a todos los usuarios conectados
-        ListRefresh();
-        //newCordinatesList();
+        ListRefreshMap();
       } else {
         console.log("vacio");
       }
     });
-    //sockets.emit('userLogout', socket.nickname);
     socket.on("userLogout", async (req, res) => {
       if (!req?.nickName) {
         console.log("No userLogout ...");
         return;
       }
-      //console.log("User Logout: ", req?.nickName);
       await dataServices.deleteUser(req?.nickName);
-      //let userList = await dataServices.userList();
-      //console.log("userList: ", userList);
       //Se transmite y emite a todos los usuarios conectados
-      ListRefresh();
+      ListRefreshMap();
+      ListRefreshChat();
       res({ logOut: true });
     });
     socket.on("disconnect", async () => {
@@ -70,25 +57,30 @@ module.exports = (io) => {
         return;
       }
       await dataServices.deleteUser(socket.nickname);
-      //let userList = await dataServices.userList();
-      //console.log('Disconnect userList:', userList);
-      ListRefresh();
+      ListRefreshMap();
+      ListRefreshChat();
     });
 
-    const ListRefresh = async () => {
+    const ListRefreshMap = async () => {
       setTimeout(async () => {
         let userList = await dataServices.userList();
-        //console.log("ListRefresh:", userList);
-        socket.broadcast.emit("userListRefresh", userList);
-      }, 5000);
+        socket.broadcast.emit("userListRefreshMap", userList);
+      }, 2000);
     };
 
-    const newCordinatesList = async () => {
+    const ListRefreshChat = async () => {
       setTimeout(async () => {
         let userList = await dataServices.userList();
-        console.log("newCordinatesList:", userList);
-        socket.broadcast.emit("newUserCordinates", userList);
-    }, 5000);
+        console.log("userListRefreshChat:", userList);
+        socket.broadcast.emit("userListRefreshChat", userList);
+      }, 2000);
+    };
+
+    const getMessages = async () => {
+      setTimeout(async () => {
+        let messages = await dataServices.getMessages();
+        console.log("messages: ", messages);
+      }, 2000);
     };
   });
 };

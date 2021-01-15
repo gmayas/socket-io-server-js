@@ -1,8 +1,24 @@
-//const Chat = require('../../models/Chat');
+const Chat = require("../../models/Chat");
 const Users = require("../../models/Users");
 
+const getMessages = async () => {
+  return await Chat.find({}, (err, data) => {
+    if (err) {
+      console.log("Error find", err);
+    } else {
+      console.log("Data find Ok");
+    }
+  }).sort("_id");
+};
+
 const userList = async () => {
- return await Users.find({}).sort("_id");
+  return await Users.find({}, (err, data) => {
+    if (err) {
+      console.log("Error find", err);
+    } else {
+      console.log("Data find Ok");
+    }
+  }).sort("_id");
 };
 
 const findUser = async (nickname) => {
@@ -33,33 +49,32 @@ const addNewUser = async (req) => {
 };
 
 const updateUser = async (position) => {
-    //console.log('updateUser position: ', position)
-    await Users.updateOne(
-        { nickName: position?.userData?.nickName },
-        {
-          position: position.LatLng,
-          updated: Date.now(),
-        },
-        (err, data) => {
-          if (err) {
-            console.log("Error updated!", err);
-          } else {
-            console.log("Data updated!");
-          }
-        }
-      );
-}
+  //console.log('updateUser position: ', position)
+  await Users.updateOne(
+    { nickName: position?.userData?.nickName },
+    {
+      position: position.LatLng,
+      updated: Date.now(),
+    },
+    (err, data) => {
+      if (err) {
+        console.log("Error updated!", err);
+      } else {
+        console.log("Data updated!");
+      }
+    }
+  );
+};
 
 const deleteUser = async (nickname) => {
-    //console.log('deleteUser nickname: ', nickname)
-    await Users.deleteMany({ nickName: nickname },  (err) => {
-        if (err) {
-          console.log("Error removed!", err);
-        } else {
-          console.log("Data removed!");
-        }
-      });
-}
+  //console.log('deleteUser nickname: ', nickname)
+  await Users.deleteMany({ nickName: nickname }, (err) => {
+    if (err) {
+      console.log("Error removed!", err);
+    } else {
+      console.log("Data removed!");
+    }
+  });
+};
 
-
-module.exports = { userList, findUser, addNewUser, updateUser, deleteUser };
+module.exports = { getMessages, userList, findUser, addNewUser, updateUser, deleteUser };
