@@ -11,6 +11,21 @@ const getMessages = async () => {
   }).sort("_id");
 };
 
+const addNewMsg = async (msg, nickName) => {
+  let newMsg = new Chat({
+    msg,
+    nick: nickName
+  });
+  console.log("newMsg: ", newMsg);
+  await newMsg.save((err, data) => {
+    if (err) {
+      console.log("Error addNewMsg", err);
+    } else {
+      console.log("Data addNewMsg Ok");
+    }
+  });
+};
+
 const userList = async () => {
   return await Users.find({}, (err, data) => {
     if (err) {
@@ -77,4 +92,4 @@ const deleteUser = async (nickname) => {
   });
 };
 
-module.exports = { getMessages, userList, findUser, addNewUser, updateUser, deleteUser };
+module.exports = { getMessages, addNewMsg, userList, findUser, addNewUser, updateUser, deleteUser };
