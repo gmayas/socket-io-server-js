@@ -3,7 +3,7 @@ const dataServices = require("../js/dataServices");
 module.exports = (io) => {
   io.on("connection", async (socket) => {
     console.log("There is a new connection...");
-    socket.emit("new connection", "Hola bienvenido a nuestra apliación.");
+    socket.emit("new connection", "Hello welcome.");
     socket.on("login user", async (req, res) => {
       socket.nickname = req.nickName;
       const findUser = await dataServices.findUser(socket.nickname);
@@ -12,7 +12,7 @@ module.exports = (io) => {
           nickName: socket.nickname,
           Ok: false,
           position: [],
-          msg: "Ya existe un usuario conectado con ese nombre, utilice otro.",
+          msg: "Hello, there is already a user connected with that name, use another.",
         });
         return;
       } else {
@@ -28,13 +28,25 @@ module.exports = (io) => {
         ListRefreshMap();
       }
     });
+    //
+    socket.on("getRoomData", async (req, res) => {
+      ListRefreshChat();
+      res(true);
+    });
+    //
+    socket.on("loadoldmsgs", async (req, res) => {
+      let msgOlds = await dataServices.getMessages();
+      //console.log('msgOlds: ', msgOlds)
+      res(msgOlds);
+    });
     // receive a message a broadcasting
     socket.on("sendMessage", async (req, callback) => {
-      //await dataServices.addNewMsg(msg, socket.nickname);
-      console.log("Emits message: ", req);
+      let { name, message } = req;
+      console.log("sendMessage: ", req);
+      await dataServices.addNewMsg(name, message);
       socket.broadcast.emit("message", {
-        user: req?.name,
-        text: req?.message,
+        user: name,
+        text: message,
       });
       callback();
     });
@@ -54,13 +66,9 @@ module.exports = (io) => {
         console.log("No userLogout ...");
         return;
       }
-      socket.broadcast.emit("message", {
-        user: "admin",
-        text: `${req?.nickName}  has left`,
-      });
       await dataServices.deleteUser(req?.nickName);
       //Se transmite y emite a todos los usuarios conectados
-      ListRefreshMap();
+      byeUser(req?.nickName);
       res({ logOut: true });
     });
 
@@ -71,38 +79,44 @@ module.exports = (io) => {
         return;
       }
       await dataServices.deleteUser(socket.nickname);
-      ListRefreshMap();
+      byeUser(socket.nickname);
     });
 
-    const welcomeToChat = async (nickname) => {
-      setTimeout(async () => {
+    const welcomeToChat = (nickname) => {
+      setTimeout(() => {
         console.log("welcomeToChat: ", true, nickname);
-        socket.emit("message", {
-          user: "admin",
-          text: `${nickname}, welcome to chat.`,
-        });
         socket.broadcast.emit("message", {
           user: "admin",
           text: `${nickname} has joined!`,
         });
-        let userList = await dataServices.userList();
-        socket.broadcast.emit("roomData", userList);
-      }, 2000);
+        ListRefreshChat();
+      }, 1000);
     };
 
-    const ListRefreshMap = async () => {
+    const byeUser = (nickname) => {
+      setTimeout(() => {
+        console.log("byeUser: ", true, nickname);
+        socket.broadcast.emit("message", {
+          user: "admin",
+          text: `${nickname} has left.`,
+        });
+        ListRefreshChat();
+        ListRefreshMap();
+      }, 1000);
+    };
+
+    const ListRefreshMap = () => {
       setTimeout(async () => {
         let userList = await dataServices.userList();
         socket.broadcast.emit("userListRefreshMap", userList);
-      }, 2000);
+      }, 1000);
     };
 
-    const getMessages = async () => {
+    const ListRefreshChat = () => {
       setTimeout(async () => {
-        let messages = await dataServices.getMessages();
-        console.log("messages: ", messages);
-        socket.emit("load old msgs", messages);
-      }, 2000);
+        let userList = await dataServices.userList();
+        socket.broadcast.emit("roomData", userList);
+      }, 1000);
     };
   });
 };

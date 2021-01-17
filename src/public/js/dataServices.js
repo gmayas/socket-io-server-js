@@ -1,8 +1,8 @@
-const Chat = require("../../models/Chat");
+const ChatReact = require("../../models/ChatReact");
 const Users = require("../../models/Users");
 
 const getMessages = async () => {
-  return await Chat.find({}, (err, data) => {
+  return await ChatReact.find({}, (err, data) => {
     if (err) {
       console.log("Error find", err);
     } else {
@@ -11,10 +11,10 @@ const getMessages = async () => {
   }).sort("_id");
 };
 
-const addNewMsg = async (msg, nickName) => {
-  let newMsg = new Chat({
-    msg,
-    nick: nickName
+const addNewMsg = async (name, message) => {
+  let newMsg = new ChatReact({
+    user: name,
+    text: message,
   });
   console.log("newMsg: ", newMsg);
   await newMsg.save((err, data) => {
