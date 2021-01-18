@@ -17,6 +17,9 @@ const server = http.createServer(app);
 
 const io = socketIo(server);
 
+// Static file
+app.use(express.static(path.join(__dirname, 'public'))); 
+
 // Sockets
 require('../src/public/js/sockets')(io);
 // Database

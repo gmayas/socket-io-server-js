@@ -20,7 +20,7 @@ module.exports = (io) => {
         res({
           nickName: socket.nickname,
           Ok: true,
-          position: req?.position,
+          position: req.position,
           msg: `Welcome: ${socket.nickname}`,
         });
         welcomeToChat(socket.nickname);
