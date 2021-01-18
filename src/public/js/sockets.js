@@ -58,12 +58,12 @@ module.exports = (io) => {
     });
 
     socket.on("userLogout", async (req, res) => {
-      if (!req?.nickName) {
+      if (!req.nickName) {
         console.log("No userLogout ...");
         return;
       }
-      await dataServices.deleteUser(req?.nickName);
-      byeUser(req?.nickName);
+      await dataServices.deleteUser(req.nickName);
+      byeUser(req.nickName);
       res({ logOut: true });
     });
 
