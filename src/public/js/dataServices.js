@@ -53,7 +53,6 @@ const addNewUser = async (req) => {
     online: req?.online,
     updated: Date.now(),
   });
-  //console.log("Login user newUser: ", newUser);
   await newUser.save((err, data) => {
     if (err) {
       console.log("Error addNewUser", err);
@@ -64,7 +63,6 @@ const addNewUser = async (req) => {
 };
 
 const updateUser = async (position) => {
-  //console.log('updateUser position: ', position)
   await Users.updateOne(
     { nickName: position?.userData?.nickName },
     {
@@ -82,7 +80,6 @@ const updateUser = async (position) => {
 };
 
 const deleteUser = async (nickname) => {
-  //console.log('deleteUser nickname: ', nickname)
   await Users.deleteMany({ nickName: nickname }, (err) => {
     if (err) {
       console.log("Error removed!", err);
