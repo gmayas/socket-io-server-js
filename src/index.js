@@ -4,11 +4,13 @@ const socketIo = require("socket.io");
 const path = require('path');
 const dotenv = require('dotenv'); 
 dotenv.config();
+const cors = require('cors');
 
 const port = process.env.PORT || 4001;
 const index = require("./routes/routes");
 
 const app = express();
+app.use(cors());
 app.use(index);
 
 const server = http.createServer(app);
