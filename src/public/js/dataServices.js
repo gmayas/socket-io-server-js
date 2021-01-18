@@ -48,9 +48,9 @@ const findUser = async (nickname) => {
 
 const addNewUser = async (req) => {
   let newUser = new Users({
-    nickName: req?.nickName,
-    position: req?.position,
-    online: req?.online,
+    nickName: req.nickName,
+    position: req.position,
+    online: req.online,
     updated: Date.now(),
   });
   await newUser.save((err, data) => {
@@ -64,7 +64,7 @@ const addNewUser = async (req) => {
 
 const updateUser = async (position) => {
   await Users.updateOne(
-    { nickName: position?.userData?.nickName },
+    { nickName: position.userData.nickName },
     {
       position: position.LatLng,
       updated: Date.now(),
