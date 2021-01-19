@@ -109,6 +109,7 @@ module.exports = (io) => {
     const ListRefreshChat = () => {
       setTimeout(async () => {
         let userList = await dataServices.userList();
+        console.log('userList: ', userList)
         socket.broadcast.emit("roomData", userList);
       }, 1000);
     };
