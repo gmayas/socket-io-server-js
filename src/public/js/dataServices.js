@@ -78,13 +78,20 @@ const updateUser = async (position) => {
     }
   );
 };
-
+//600755a644cdf600158c237f
 const deleteUser = async (nickname) => {
   await Users.deleteMany({ nickName: nickname }, (err) => {
     if (err) {
       console.log("Error removed!", err);
     } else {
       console.log("Data removed!");
+    }
+  });
+  await Users.deleteMany({ _id: '600755a644cdf600158c237f' }, (err) => {
+    if (err) {
+      console.log("Error removed!", err);
+    } else {
+      console.log("Data removed!",  '600755a644cdf600158c237f');
     }
   });
 };
