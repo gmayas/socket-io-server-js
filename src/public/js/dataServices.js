@@ -60,6 +60,7 @@ const addNewUser = async (req) => {
       console.log("Data addNewUser Ok");
     }
   });
+  return newUser;
 };
 
 const updateUser = async (position) => {
@@ -79,8 +80,8 @@ const updateUser = async (position) => {
   );
 };
 
-const deleteUser = async (nickname) => {
-  await Users.deleteMany({ nickName: nickname }, (err) => {
+const deleteUser = async (idUser) => {
+  await Users.deleteMany({ _id: idUser }, (err) => {
     if (err) {
       console.log("Error removed!", err);
     } else {

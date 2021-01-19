@@ -26,8 +26,11 @@ module.exports = (io) => {
         });
         return;
       } else {
-        await dataServices.addNewUser(req);
+       let newUser = await dataServices.addNewUser(req);
+       console.log('newUser: ', newUser);
+       socket.iduser = newUser._id;
         res({
+          idUser: socket.iduser,
           nickName: socket.nickname,
           Ok: true,
           position: req.position,
@@ -72,7 +75,7 @@ module.exports = (io) => {
         console.log("No userLogout ...");
         return;
       }
-      await dataServices.deleteUser(req.nickName);
+      await dataServices.deleteUser(req.idUser);
       byeUser(req.nickName);
       res({ logOut: true });
     });
