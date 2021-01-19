@@ -5,7 +5,17 @@ module.exports = (io) => {
     console.log("There is a new connection...");
     socket.emit("new connection", "Hello, welcome to Map & Chat");
     socket.on("login user", async (req, res) => {
-      socket.nickname = req.nickName;
+       socket.nickname = req.nickName.trim();
+       console.log('socket.nickname: ',  socket.nickname)
+      if (socket.nickname.length <=0 ){
+        res({
+          nickName: socket.nickname,
+          Ok: false,
+          position: [],
+          msg: "Hello, you must write a name",
+        });
+        return;
+      }
       const findUser = await dataServices.findUser(socket.nickname);
       if (findUser) {
         res({
