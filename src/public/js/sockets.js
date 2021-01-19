@@ -68,14 +68,13 @@ module.exports = (io) => {
     });
 
     socket.on("disconnect", async () => {
-      console.log("Disconnect only ...");
-     /* console.log("Disconnect socket.nickname:", socket.nickname);
+     console.log("Disconnect socket.nickname:", socket.nickname);
       if (!socket.nickname) {
         console.log("Disconnect only ...");
         return;
       }
       await dataServices.deleteUser(socket.nickname);
-      byeUser(socket.nickname);*/
+      byeUser(socket.nickname);
     });
 
     const welcomeToChat = (nickname) => {
