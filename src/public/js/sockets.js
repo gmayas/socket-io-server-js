@@ -53,11 +53,21 @@ module.exports = (io) => {
 
     socket.on("sendMessage", async (req, callback) => {
       let { name, message } = req;
-      await dataServices.addNewMsg(name, message);
-      socket.broadcast.emit("message", {
-        user: name,
-        text: message,
-      });
+      let pattern = /^(http|https|ftp)\:\/\/[a-z0-9\.-]+\.[a-z]{2,4}/gi;
+     console.log('message: ', message)
+      if(message.match(pattern))
+         {
+           console.log('message.match: ', true)
+        }
+      else
+         {
+           console.log('message.match: ', false)
+           await dataServices.addNewMsg(name, message);
+           socket.broadcast.emit("message", {
+             user: name,
+             text: message,
+           });
+        } 
       callback();
     });
 
