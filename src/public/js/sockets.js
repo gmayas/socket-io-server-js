@@ -75,6 +75,7 @@ module.exports = (io) => {
         console.log("No userLogout ...");
         return;
       }
+      console.log('req.idUser: ', req.idUser)
       await dataServices.deleteUser(req.idUser);
       byeUser(req.nickName);
       res({ logOut: true });
