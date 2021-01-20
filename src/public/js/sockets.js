@@ -82,12 +82,12 @@ module.exports = (io) => {
     });
 
     socket.on("disconnect", async () => {
-     console.log("Disconnect socket.nickname:", socket.nickname);
+     console.log("Disconnect socket.iduser:", socket.iduser);
       if (!socket.nickname) {
         console.log("Disconnect only ...");
         return;
       }
-      await dataServices.deleteUser(socket.nickname);
+      await dataServices.deleteUser(socket.iduser);
       byeUser(socket.nickname);
     });
 
@@ -123,7 +123,7 @@ module.exports = (io) => {
     const ListRefreshChat = () => {
       setTimeout(async () => {
         let userList = await dataServices.userList();
-        console.log('userList: ', userList)
+        //console.log('userList: ', userList)
         socket.broadcast.emit("roomData", userList);
       }, 1000);
     };
